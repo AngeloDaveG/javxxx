@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 videoElement.src = channel.src;
                 videoElement.loop = true;
                 videoElement.play();
-                console.log(`Loaded MP4 channel: ${channel.name}`);
             } else {
                     const clearkeyConfig = parseClearKey(channel.key);
                     player.configure({
@@ -35,7 +34,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                         },
                     });
                 await player.load(channel.src);
-                console.log(`Loaded channel: ${channel.name}`);
+                const textTracks = player.getTextTracks();
+                let selectedTrack = textTracks.find(track => track.language === 'en');
+                if (!selectedTrack && textTracks.length > 0) {
+                    selectedTrack = textTracks[0];
+                }
+                if (selectedTrack) {
+                    player.selectTextTrack(selectedTrack);
+                    player.setTextTrackVisibility(true);
+                }
             }
         } catch (error) {
             console.error('Error loading channel:', error);
